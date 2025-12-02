@@ -11,8 +11,7 @@ pub(crate) fn part_1(contents: &str) -> Result<usize>
         .lines()
         .map(str::trim)
         .filter(|string| !string.is_empty())
-        .fold(Ok::<_, ParseIntError>((DIAL_START, 0_usize)), |state, line| {
-            let (dial, password) = state?;
+        .try_fold((DIAL_START, 0_usize), |(dial, password), line| {
             let (direction, rotation) = line.split_at(1);
 
             let rotation: i16 = rotation.parse::<i16>()? *
@@ -23,7 +22,7 @@ pub(crate) fn part_1(contents: &str) -> Result<usize>
                     | _ => 0
                 };
             let dial = (dial + rotation).rem_euclid(DIAL_MAX);
-            Ok((dial, password + (dial == 0) as usize))
+            Ok::<_, ParseIntError>((dial, password + (dial == 0) as usize))
         })?
         .1)
 }
@@ -34,9 +33,7 @@ pub(crate) fn part_2(contents: &str) -> Result<usize>
         .lines()
         .map(str::trim)
         .filter(|string| !string.is_empty())
-        .fold(Ok::<_, ParseIntError>((DIAL_START, 0_usize)), |state, line| {
-            let (dial, password) = state?;
-
+        .try_fold((DIAL_START, 0_usize), |(dial, password), line| {
             let (direction, rotation) = line.split_at(1);
             let rotation: i16 = rotation.parse::<i16>()? *
                 match direction
@@ -49,11 +46,11 @@ pub(crate) fn part_2(contents: &str) -> Result<usize>
             let sum = dial + rotation;
 
             let password = password +
-                (sum / DIAL_MAX).abs() as usize +
+                (sum / DIAL_MAX).unsigned_abs() as usize +
                 (dial != 0 && sum <= 0) as usize;
             let dial = sum.rem_euclid(DIAL_MAX);
 
-            Ok((dial, password))
+            Ok::<_, ParseIntError>((dial, password))
         })?
         .1)
 }
