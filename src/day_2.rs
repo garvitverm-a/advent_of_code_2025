@@ -1,5 +1,7 @@
 use std::num::ParseIntError;
 
+use itertools::Itertools;
+
 pub(crate) fn part_1(contents: &str) -> usize
 {
     contents
@@ -21,16 +23,8 @@ pub(crate) fn part_1(contents: &str) -> usize
             (first ..= second)
                 .filter(|num| {
                     let num = num.to_string();
-                    let num: &str = &num;
-                    if num.len() & 1 != 0
-                    {
-                        false
-                    }
-                    else
-                    {
-                        let mid = num.len() / 2;
-                        num[.. mid] == num[mid ..]
-                    }
+                    num.len() & 1 == 0 &&
+                        num[.. num.len() / 2] == num[num.len() / 2 ..]
                 })
                 .sum::<usize>()
         })
@@ -58,7 +52,7 @@ pub(crate) fn part_2(contents: &str) -> usize
             (first ..= second)
                 .filter(|num| {
                     let num = num.to_string();
-                    let patterns: Vec<usize> = match num.len()
+                    let chunk_sizes: Vec<usize> = match num.len()
                     {
                         | 1 => vec![],
                         | 2 | 3 | 5 | 7 => vec![1],
@@ -70,15 +64,13 @@ pub(crate) fn part_2(contents: &str) -> usize
                         | 0 | 11 .. => unreachable!()
                     };
 
-                    for factor in patterns
-                    {
-                        let prefix = &num[.. factor];
-                        if num == prefix.repeat(num.len() / factor)
-                        {
-                            return true;
-                        }
-                    }
-                    false
+                    chunk_sizes
+                        .iter()
+                        .any(|&chunk_size| {
+                            num.as_bytes()
+                                .chunks(chunk_size)
+                                .all_equal()
+                        })
                 })
                 .sum::<usize>()
         })
