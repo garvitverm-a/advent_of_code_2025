@@ -1,12 +1,19 @@
 use std::num::ParseIntError;
 
 use itertools::Itertools;
+use rayon::{
+    iter::{
+        IntoParallelIterator,
+        ParallelIterator
+    },
+    str::ParallelString
+};
 
 pub(crate) fn part_1(contents: &str) -> usize
 {
     contents
         .trim()
-        .split(',')
+        .par_split(',')
         .map(|string| {
             let mut split = string.split('-');
             Some((split.next()?, split.next()?))
@@ -21,6 +28,7 @@ pub(crate) fn part_1(contents: &str) -> usize
         .map(|state| {
             let (first, second) = state.expect("Failed to parse range");
             (first ..= second)
+                .into_par_iter()
                 .filter(|num| {
                     let num = num.to_string();
                     num.len() & 1 == 0 &&
@@ -35,7 +43,7 @@ pub(crate) fn part_2(contents: &str) -> usize
 {
     contents
         .trim()
-        .split(',')
+        .par_split(',')
         .map(|string| {
             let mut split = string.split('-');
             Some((split.next()?, split.next()?))
@@ -50,6 +58,7 @@ pub(crate) fn part_2(contents: &str) -> usize
         .map(|state| {
             let (first, second) = state.expect("Failed to parse range");
             (first ..= second)
+                .into_par_iter()
                 .filter(|num| {
                     let num = num.to_string();
                     let chunk_sizes: Vec<usize> = match num.len()
@@ -65,8 +74,8 @@ pub(crate) fn part_2(contents: &str) -> usize
                     };
 
                     chunk_sizes
-                        .iter()
-                        .any(|&chunk_size| {
+                        .into_par_iter()
+                        .any(|chunk_size| {
                             num.as_bytes()
                                 .chunks(chunk_size)
                                 .all_equal()
