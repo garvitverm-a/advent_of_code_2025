@@ -69,7 +69,7 @@ pub(crate) fn part_1(contents: &str) -> usize
         .flat_map(|s| {
             s.trim()
                 .bytes()
-                .map(|c| c == '@' as u8)
+                .map(|c| c == b'@')
         })
         .collect_vec();
 
@@ -116,7 +116,7 @@ pub(crate) fn part_2(contents: &str) -> usize
         .flat_map(|s| {
             s.trim()
                 .bytes()
-                .map(|c| c == '@' as u8)
+                .map(|c| c == b'@')
         })
         .collect_vec();
 
