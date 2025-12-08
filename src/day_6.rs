@@ -3,16 +3,6 @@ use anyhow::{
     anyhow
 };
 use itertools::Itertools;
-use rayon::iter::{
-    IntoParallelIterator,
-    ParallelIterator
-};
-
-enum Operator
-{
-    Add,
-    Multiply
-}
 
 pub(crate) fn part_1(contents: &str) -> Result<usize>
 {
@@ -24,12 +14,6 @@ pub(crate) fn part_1(contents: &str) -> Result<usize>
     let operators = problems
         .pop()
         .ok_or(anyhow!("no lines??"))?
-        .map(|string| match string.trim()
-        {
-            | "*" => Operator::Multiply,
-            | "+" => Operator::Add,
-            | _ => unreachable!("invalid operator")
-        })
         .collect_vec();
 
     let mut result = 0;
@@ -51,8 +35,9 @@ pub(crate) fn part_1(contents: &str) -> Result<usize>
                 .ok_or(anyhow!("invalid grid"))?;
             match operator
             {
-                | Operator::Add => problem += operand,
-                | Operator::Multiply => problem *= operand
+                | "+" => problem += operand,
+                | "*" => problem *= operand,
+                | _ => unreachable!()
             }
         }
         result += problem;
