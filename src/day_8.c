@@ -134,31 +134,14 @@ int main(void)
     }
 
     struct vec3 positions[SIZE] = {0};
-    size_t j                    = 0;
 
-    char *buf      = NULL;
-    size_t buf_len = 0;
-
-    while (getline(&buf, &buf_len, input) != -1)
     {
-        int nums[3] = {0};
-        size_t i    = 0;
-
-        for (size_t k = 0; k < buf_len; k++)
+        struct vec3 *p = positions;
+        while (fscanf(input, " %d,%d,%d", &p->x, &p->y, &p->z) == 3 && p != positions + SIZE)
         {
-            if (buf[k] == ',')
-            {
-                i++;
-                continue;
-            }
-            if (buf[k] == '\n')
-            {
-                break;
-            }
-            nums[i] = nums[i] * 10 + (buf[k] - '0');
+            p++;
         }
-
-        positions[j++] = (struct vec3){.x = nums[0], .y = nums[1], .z = nums[2]};
+        assert(p == positions + SIZE);
     }
 
     u64 answer_1 = part_1(positions);
